@@ -30,6 +30,8 @@ import java.io.*;
 import java.util.*;
 import com.holub.tools.ArrayIterator;
 
+import javax.xml.stream.XMLStreamException;
+
 /**
  * A concrete implementation of the {@link Table} interface that implements an
  * in-memory table. Most of the methods of this class are documented in the
@@ -682,6 +684,11 @@ import com.holub.tools.ArrayIterator;
 				report(t, "HTML");
 			}
 			try {
+				testXMLExport();
+			} catch (Throwable t) {
+				report(t, "XML");
+			}
+			try {
 				testJoin();
 			} catch (Throwable t) {
 				report(t, "Join");
@@ -831,6 +838,22 @@ import com.holub.tools.ArrayIterator;
 			System.out.println("\nStore HTML!!!!!!");
 
 		}
+
+		public void testXMLExport() throws IOException, ClassNotFoundException, XMLStreamException {
+			// Flush the table to HTML file, then reread it.
+			// Subsequent tests that use the "people" table will fail if this operation fails.
+
+			Writer out = new FileWriter("people.xml");
+			people.export(new XMLExporter(out));
+			out.close();
+			System.out.println("\nStore XML!!!!!!");
+			//Reader in = new FileReader("people.xml");
+			//people = new ConcreteTable(new XMLImporter(in));
+			//in.close();
+
+
+		}
+
 
 		public void testJoin() {
 			// First test a two-way join
