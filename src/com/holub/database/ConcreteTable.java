@@ -906,8 +906,7 @@ import javax.xml.stream.XMLStreamException;
 			} catch (IOException e) {
 				e.printStackTrace();
 			} finally {
-				// 실제 응용 프로그램에서는 예외를 적절히 처리해야 합니다.
-				// 리더를 마지막에 닫도록 주의하세요.
+
 				try {
 					reader.close();
 				} catch (IOException e) {

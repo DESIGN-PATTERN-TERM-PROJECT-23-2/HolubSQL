@@ -75,7 +75,6 @@ public class XMLImporter implements Table.Importer {
 
     public Iterator loadRow() throws IOException {
         if (columnNames == null) {
-            // 열 이름이 로드되지 않았거나 더 이상의 행이 없습니다.
             return null;
         }
 
@@ -88,7 +87,6 @@ public class XMLImporter implements Table.Importer {
 
         String line = in.readLine();
         if (line == null || line.trim().equals("</rows>")) {
-            // 더 이상의 행이 없습니다.
             columnNames = null; // 다음 테이블을 위해 열 이름 재설정
             return null;
         }
@@ -108,7 +106,7 @@ public class XMLImporter implements Table.Importer {
             line = in.readLine();
         }
 
-        // values.size()가 columnNames.length와 같다고 가정합니다.
+
         String[] row = values.toArray(new String[0]);
         return new ArrayIterator(row);
     }
