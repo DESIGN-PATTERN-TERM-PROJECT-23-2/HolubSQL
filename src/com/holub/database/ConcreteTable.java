@@ -105,14 +105,26 @@ import javax.xml.stream.XMLStreamException;
 		Iterator columns = importer.loadColumnNames();
 
 		this.columnNames = new String[width];
-		for (int i = 0; columns.hasNext();)
-			columnNames[i++] = (String) columns.next();
+		for (int i = 0; columns.hasNext();){
+			String currentColumn = (String) columns.next();
+			//System.out.print(currentColumn + " ");
+			//System.out.print("Column!!!!");
+			columnNames[i++] = currentColumn;
+
+		}
+
 
 		while ((columns = importer.loadRow()) != null) {
+			//System.out.println(" ");
 			Object[] current = new Object[width];
-			for (int i = 0; columns.hasNext();)
-				current[i++] = columns.next();
+			for (int i = 0; columns.hasNext();) {
+				Object columnValue = columns.next();
+				//System.out.print(columnValue + " ");
+				//System.out.print("ColumnValue!!!!");
+				current[i++] = columnValue;
+			}
 			this.insert(current);
+
 		}
 		importer.endTable();
 	}
@@ -825,7 +837,11 @@ import javax.xml.stream.XMLStreamException;
 			out.close();
 
 			Reader in = new FileReader("people");
-			people = new ConcreteTable(new CSVImporter(in));
+			CSVImporter csvImporter = new CSVImporter(in);
+			System.out.println("\nCVSIMMMM!!!!");
+			people = new ConcreteTable(csvImporter);
+
+			//print(people);
 			in.close();
 		}
 		public void testHTMLExport() throws IOException, ClassNotFoundException {
@@ -850,6 +866,56 @@ import javax.xml.stream.XMLStreamException;
 			//Reader in = new FileReader("people.xml");
 			//people = new ConcreteTable(new XMLImporter(in));
 			//in.close();
+			//System.out.println("\nImporter XML!!!!!!");
+			//print(people);
+
+			Reader reader = new FileReader("people.xml");
+			XMLImporter importer = new XMLImporter(reader);
+
+			try {
+				importer.startTable();
+
+				// 테이블 이름 가져오기
+				String tableName = importer.loadTableName();
+				System.out.println("테이블 이름: " + tableName);
+
+				// 열의 수 가져오기
+				int width = importer.loadWidth();
+				System.out.println("열의 수: " + width);
+
+				// 열 이름 가져오기
+				Iterator<String> columnNamesIterator = importer.loadColumnNames();
+				System.out.print("열 이름: ");
+				while (columnNamesIterator.hasNext()) {
+					System.out.print(columnNamesIterator.next() + " ");
+				}
+				System.out.println();
+
+				// 각 행 로드 및 출력
+				Iterator rowIterator;
+				while ((rowIterator = importer.loadRow()) != null) {
+					System.out.print("행 데이터: ");
+					while (rowIterator.hasNext()) {
+						System.out.print(rowIterator.next() + " ");
+					}
+					System.out.println();
+				}
+
+				// 테이블 마무리 및 리더 닫기
+				importer.endTable();
+			} catch (IOException e) {
+				e.printStackTrace();
+			} finally {
+				// 실제 응용 프로그램에서는 예외를 적절히 처리해야 합니다.
+				// 리더를 마지막에 닫도록 주의하세요.
+				try {
+					reader.close();
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+			}
+
+
 
 
 		}

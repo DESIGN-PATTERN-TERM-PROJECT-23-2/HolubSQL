@@ -1,48 +1,66 @@
 package com.holub.database;
+
 import com.holub.tools.ArrayIterator;
 
-import java.io.*;
-import java.util.*;
-import javax.xml.stream.XMLInputFactory;
-import javax.xml.stream.XMLStreamConstants;
-import javax.xml.stream.XMLStreamException;
-import javax.xml.stream.XMLStreamReader;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.Reader;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class XMLImporter implements Table.Importer {
-    private XMLStreamReader reader;  // null once end-of-file reached
-    private String[] columnNames;
+    private BufferedReader in;      // null once end-of-file reached
     private String tableName;
+    private String[] columnNames;
+    private String[] firstRow;
 
-    public XMLImporter(Reader in) throws XMLStreamException {
-        XMLInputFactory factory = XMLInputFactory.newInstance();
-        reader = factory.createXMLStreamReader(in);
+    public XMLImporter(Reader in) {
+        this.in = in instanceof BufferedReader ? (BufferedReader) in : new BufferedReader(in);
+
     }
 
+    @Override
     public void startTable() throws IOException {
-        try {
-            while (reader.hasNext()) {
-                int event = reader.next();
-                if (event == XMLStreamConstants.START_ELEMENT) {
-                    tableName = reader.getLocalName().trim();
-                    break;
-                }
-            }
+        in.readLine(); // <?xml version="1.0" encoding="UTF-8"?>
+        in.readLine(); // <root>
 
-            // Assuming the first child of the table element contains column names
-            while (reader.hasNext()) {
-                int event = reader.next();
-                if (event == XMLStreamConstants.START_ELEMENT) {
-                    String rowElement = reader.getLocalName();
-                    reader.next(); // Move to text node
-                    columnNames = reader.getText().split("\\s*,\\s*");
-                    break;
+        String line = in.readLine(); // <title>people</title>
+
+        if (line != null) {
+            tableName = extractValueFromTag(line, "title");
+            in.readLine(); // <rows>
+            in.readLine(); // <row>
+
+
+            line = in.readLine();
+
+            if (line != null && line.trim().startsWith("<")) {
+                List<String> columnList = new ArrayList<>();
+                List<String> values = new ArrayList<>();
+
+                while (!line.trim().equals("</row>")) {
+                    Matcher matcher = Pattern.compile("<(.*?)>").matcher(line);
+
+                    while (matcher.find()) {
+                        String tag = matcher.group(1);
+                        values.add(extractValueFromTag(line, tag));
+
+                        if (!tag.startsWith("/")) {
+                            columnList.add(tag);
+                        }
+                    }
+
+                    line = in.readLine();
                 }
+
+                columnNames = columnList.toArray(new String[0]);
+                firstRow = values.toArray(new String[0]);
             }
-        } catch (XMLStreamException e) {
-            throw new IOException(e);
         }
     }
-
     public String loadTableName() throws IOException {
         return tableName;
     }
@@ -56,43 +74,67 @@ public class XMLImporter implements Table.Importer {
     }
 
     public Iterator loadRow() throws IOException {
-        Iterator row = null;
-        try {
-            while (reader.hasNext()) {
-                int event = reader.next();
-                if (event == XMLStreamConstants.START_ELEMENT) {
-                    String rowElement = reader.getLocalName();
-                    reader.next(); // Move to text node
-                    String[] values = reader.getText().split("\\s*,\\s*");
-                    row = new ArrayIterator(values);
-                    break;
-                } else if (event == XMLStreamConstants.END_ELEMENT && reader.getLocalName().equals(tableName)) {
-                    reader.close();
-                    reader = null;
-                    break;
-                }
-            }
-        } catch (XMLStreamException e) {
-            throw new IOException(e);
+        if (columnNames == null) {
+            // 열 이름이 로드되지 않았거나 더 이상의 행이 없습니다.
+            return null;
         }
-        return row;
+
+
+        if (firstRow != null) {
+            String[] row = firstRow;
+            firstRow = null;
+            return new ArrayIterator(row);
+        }
+
+        String line = in.readLine();
+        if (line == null || line.trim().equals("</rows>")) {
+            // 더 이상의 행이 없습니다.
+            columnNames = null; // 다음 테이블을 위해 열 이름 재설정
+            return null;
+        }
+
+
+
+        List<String> values = new ArrayList<>();
+
+        while (!line.trim().equals("</row>")) {
+            Matcher matcher = Pattern.compile("<(.*?)>(.*?)</\\1>").matcher(line);
+
+            while (matcher.find()) {
+                String value = matcher.group(2);
+                values.add(value);
+            }
+
+            line = in.readLine();
+        }
+
+        // values.size()가 columnNames.length와 같다고 가정합니다.
+        String[] row = values.toArray(new String[0]);
+        return new ArrayIterator(row);
     }
 
+
+
     public void endTable() throws IOException {
-        if (reader != null) {
-            try {
-                while (reader.hasNext()) {
-                    int event = reader.next();
-                    if (event == XMLStreamConstants.END_ELEMENT && reader.getLocalName().equals(tableName)) {
-                        reader.close();
-                        reader = null;
-                        break;
-                    }
-                }
-            } catch (XMLStreamException e) {
-                throw new IOException(e);
-            }
-        }
     }
+
+    private String extractValueFromTag(String line, String tagName) {
+        String startTag = "<" + tagName + ">";
+        String endTag = "</" + tagName + ">";
+
+        int startIndex = line.indexOf(startTag);
+        int endIndex = line.indexOf(endTag);
+
+        if (startIndex == -1 || endIndex == -1 || startIndex >= endIndex) {
+            // 태그를 찾지 못하거나 순서가 올바르지 않음
+            return "";
+        }
+
+        startIndex += startTag.length();
+        return line.substring(startIndex, endIndex);
+    }
+
+
 }
+
 
