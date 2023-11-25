@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<root>
+<title>people</title>
+<rows>
+<row>
+<last>A1</last>
+<first>A2</first>
+<addrId>1</addrId>
+</row>
+<row>
+<last>B1</last>
+<first>B2</first>
+<addrId>2</addrId>
+</row>
+<row>
+<last>C1</last>
+<first>C2</first>
+<addrId>3</addrId>
+</row>
+</rows>
+</root>
