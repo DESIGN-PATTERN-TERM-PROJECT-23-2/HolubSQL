@@ -677,6 +677,11 @@ import com.holub.tools.ArrayIterator;
 				report(t, "Store/Load");
 			}
 			try {
+				testHTMLExport();
+			} catch (Throwable t) {
+				report(t, "HTML");
+			}
+			try {
 				testJoin();
 			} catch (Throwable t) {
 				report(t, "Join");
@@ -815,6 +820,16 @@ import com.holub.tools.ArrayIterator;
 			Reader in = new FileReader("people");
 			people = new ConcreteTable(new CSVImporter(in));
 			in.close();
+		}
+		public void testHTMLExport() throws IOException, ClassNotFoundException {
+			// Flush the table to HTML file, then reread it.
+			// Subsequent tests that use the "people" table will fail if this operation fails.
+
+			Writer out = new FileWriter("people.html");
+			people.export(new HTMLExporter(out));
+			out.close();
+			System.out.println("\nStore HTML!!!!!!");
+
 		}
 
 		public void testJoin() {
