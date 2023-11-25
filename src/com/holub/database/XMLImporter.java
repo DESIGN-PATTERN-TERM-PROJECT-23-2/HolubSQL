@@ -46,7 +46,10 @@ public class XMLImporter implements Table.Importer {
 
                     while (matcher.find()) {
                         String tag = matcher.group(1);
-                        values.add(extractValueFromTag(line, tag));
+                        String value = extractValueFromTag(line, tag);
+                        if(value != "") {
+                            values.add(extractValueFromTag(line, tag));
+                        }
 
                         if (!tag.startsWith("/")) {
                             columnList.add(tag);
@@ -123,10 +126,13 @@ public class XMLImporter implements Table.Importer {
         int startIndex = line.indexOf(startTag);
         int endIndex = line.indexOf(endTag);
 
+
         if (startIndex == -1 || endIndex == -1 || startIndex >= endIndex) {
             // 태그를 찾지 못하거나 순서가 올바르지 않음
             return "";
         }
+
+
 
         startIndex += startTag.length();
         return line.substring(startIndex, endIndex);

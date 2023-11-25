@@ -119,8 +119,8 @@ import javax.xml.stream.XMLStreamException;
 			Object[] current = new Object[width];
 			for (int i = 0; columns.hasNext();) {
 				Object columnValue = columns.next();
-				//System.out.print(columnValue + " ");
-				//System.out.print("ColumnValue!!!!");
+				System.out.print(columnValue + " ");
+				System.out.print("ColumnValue!!!!");
 				current[i++] = columnValue;
 			}
 			this.insert(current);
@@ -863,11 +863,11 @@ import javax.xml.stream.XMLStreamException;
 			people.export(new XMLExporter(out));
 			out.close();
 			System.out.println("\nStore XML!!!!!!");
-			//Reader in = new FileReader("people.xml");
-			//people = new ConcreteTable(new XMLImporter(in));
-			//in.close();
+			Reader in = new FileReader("people.xml");
+			people = new ConcreteTable(new XMLImporter(in));
+			in.close();
 			//System.out.println("\nImporter XML!!!!!!");
-			//print(people);
+			/*
 
 			Reader reader = new FileReader("people.xml");
 			XMLImporter importer = new XMLImporter(reader);
@@ -913,6 +913,8 @@ import javax.xml.stream.XMLStreamException;
 					e.printStackTrace();
 				}
 			}
+
+			 */
 
 
 

@@ -45,7 +45,7 @@ class XMLImporterTest {
 
 
             StringBuilder expectedOutput = new StringBuilder();
-            expectedOutput.append("Holub  Allen  1  \n");
+            expectedOutput.append("Holub Allen 1 \n");
             expectedOutput.append("Flintstone Wilma 2 \n");
             expectedOutput.append("Flintstone Fred 2 \n");
 
@@ -55,6 +55,7 @@ class XMLImporterTest {
             while ((rowIterator = importer.loadRow()) != null) {
                 while (rowIterator.hasNext()) {
                     actualOutput.append(rowIterator.next()).append(" ");
+                    //System.out.println(actualOutput);
                 }
                 actualOutput.append("\n");
             }
