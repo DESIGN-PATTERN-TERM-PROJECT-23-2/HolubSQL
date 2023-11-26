@@ -36,9 +36,15 @@ public class SelectTest {
     public void join_test() throws IOException, ParseFailure {
         insertData();
         Table join_table = database.execute("select * from address, name where address.addrId = name.addrId");
-        Table expectedTable = TableFactory.create("expected", new String[]{"addrId", "street", "city", "state", "zip", "addrId", "street", "city"});
-        expectedTable.insert(new Object[]{"1", "AStreet", "ACity", "AState", "AZip", "A1", "A2", 1});
-        expectedTable.insert(new Object[]{"2", "BStreet", "BCity", "BState", "BZip", "B1", "B2", 2});
-        Assertions.assertEquals(expectedTable, join_table);
+        Table expectedTable = TableFactory.create("<anonymous>", new String[]{"addrId", "street", "city", "state", "zip", "first", "last", "addrId"});
+        expectedTable.insert(new Object[]{"0", "12 MyStreet", "Berkeley", "CA", "99998", "Allen", "Holub", 0});
+        expectedTable.insert(new Object[]{"1", "34 Quarry Ln.", "Bedrock", "AZ", "00000", "Fred", "Flintstone", 1});
+        expectedTable.insert(new Object[]{"1", "34 Quarry Ln.", "Bedrock", "AZ", "00000", "Wilma", "Flintstone", 1});
+
+        String string_expected = expectedTable.toString();
+
+       String string_join_table = join_table.toString();
+
+        Assertions.assertEquals(string_expected, string_join_table);
     }
 }
