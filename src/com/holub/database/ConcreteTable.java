@@ -456,13 +456,18 @@ import javax.xml.stream.XMLStreamException;
 	/**
 	 * This version of select does a join
 	 */
+	public String[] getColumns() {
+		return columnNames;
+	}
 	public Table select(Selector where, String[] requestedColumns, // {=ConcreteTable.select.default}
 			Table[] otherTables) {
 		// If we're not doing a join, use the more efficient version
 		// of select().
 
+
 		if (otherTables == null || otherTables.length == 0)
 			return select(where, requestedColumns);
+
 
 		// Make the current table not be a special case by effectively
 		// prefixing it to the otherTables array.
@@ -474,16 +479,34 @@ import javax.xml.stream.XMLStreamException;
 		// Create places to hold the result of the join and to hold
 		// iterators for each table involved in the join.
 
+		if (requestedColumns == null) {
+			List<String> allColumns = new ArrayList<>();
+            for (Table allTable : allTables) {
+                System.out.println(allTable);
+				if (allTable instanceof ConcreteTable) {
+					allColumns.addAll(Arrays.asList(((ConcreteTable) allTable).getColumns()));
+					System.out.println(allColumns);
+				}
+            }
+
+			requestedColumns = allColumns.toArray(new String[0]);
+
+		}
+
 		Table resultTable = new ConcreteTable(null, requestedColumns);
 		Cursor[] envelope = new Cursor[allTables.length];
 
 		// Recursively compute the Cartesian product, adding to the
 		// resultTable all rows that the Selector approves
 
+
+
 		selectFromCartesianProduct(0, where, requestedColumns, allTables, envelope, resultTable);
 
 		return new UnmodifiableTable(resultTable);
 	}
+
+
 
 	/**
 	 * Think of the Cartesian product as a kind of tree. That is given one table
@@ -838,7 +861,7 @@ import javax.xml.stream.XMLStreamException;
 
 			Reader in = new FileReader("people");
 			CSVImporter csvImporter = new CSVImporter(in);
-			System.out.println("\nCVSIMMMM!!!!");
+			//System.out.println("\nCVSIMMMM!!!!");
 			people = new ConcreteTable(csvImporter);
 
 			//print(people);

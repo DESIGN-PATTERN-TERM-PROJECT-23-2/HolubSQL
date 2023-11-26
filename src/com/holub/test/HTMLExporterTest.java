@@ -12,14 +12,12 @@ import java.io.*;
 import static org.junit.jupiter.api.Assertions.*;
 
 public class HTMLExporterTest {
-    Table people = TableFactory.create("people", new String[] { "last", "first", "addrId" });Table address = TableFactory.create("address", new String[] { "addrId", "street", "city", "state", "zip" });
-    Database database;
+    Table people = TableFactory.create("people", new String[] { "last", "first", "addrId" });
 
     private void insertData() throws IOException {
-        people.insert(new Object[] { "A1", "A2", "1" });
-        people.insert(new Object[] { "B1", "B2", "2"});
-        people.insert(new Object[] { "C1", "C2", "3"});
-        database = new Database(new File("."));
+        people.insert(new Object[] { "A1", "A2", 1 });
+        people.insert(new Object[] { "B1", "B2", 2});
+        people.insert(new Object[] { "C1", "C2", 3});
     }
 
     @DisplayName("HTML Exporter Test")

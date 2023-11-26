@@ -251,7 +251,11 @@ public interface Table extends Serializable, Cloneable
 	 *  "dirty" status is cleared (set false) on an export.
 	 *  @see #isDirty
 	 */
+
+
 	void export( Table.Exporter importer ) throws IOException;
+
+
 
 	/******************************************************************* 
 	 * Used for exporting tables in various formats. Note that

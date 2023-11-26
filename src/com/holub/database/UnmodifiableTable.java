@@ -52,6 +52,7 @@ import java.util.*;
 public class UnmodifiableTable implements Table
 {	private Table wrapped;
 
+
 	public UnmodifiableTable( Table wrapped )
 	{	this.wrapped = wrapped;
 	}
