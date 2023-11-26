@@ -456,7 +456,7 @@ import javax.xml.stream.XMLStreamException;
 	/**
 	 * This version of select does a join
 	 */
-	private String[] getColumns() {
+	public String[] getColumns() {
 		return columnNames;
 	}
 	public Table select(Selector where, String[] requestedColumns, // {=ConcreteTable.select.default}
@@ -481,9 +481,13 @@ import javax.xml.stream.XMLStreamException;
 
 		if (requestedColumns == null) {
 			List<String> allColumns = new ArrayList<>();
-			for (int i = 0; i < allTables.length; i++) {
-				allColumns.addAll(Arrays.asList(this.getColumns()));
-			}
+            for (Table allTable : allTables) {
+                System.out.println(allTable);
+				if (allTable instanceof ConcreteTable) {
+					allColumns.addAll(Arrays.asList(((ConcreteTable) allTable).getColumns()));
+					System.out.println(allColumns);
+				}
+            }
 
 			requestedColumns = allColumns.toArray(new String[0]);
 
@@ -857,7 +861,7 @@ import javax.xml.stream.XMLStreamException;
 
 			Reader in = new FileReader("people");
 			CSVImporter csvImporter = new CSVImporter(in);
-			System.out.println("\nCVSIMMMM!!!!");
+			//System.out.println("\nCVSIMMMM!!!!");
 			people = new ConcreteTable(csvImporter);
 
 			//print(people);
