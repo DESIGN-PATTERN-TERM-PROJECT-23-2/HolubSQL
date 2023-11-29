@@ -816,8 +816,8 @@ public final class Database
 			//System.out.println(a);
 			String into = null;
 			String groupedCol = null;
-			String t = in.matchAdvance(MAX); //추후 여기를 switch 문으로 변경
-			if( t != null){
+			String strategy = in.matchAdvance(MAX); //추후 여기를 switch 문으로 변경
+			if( strategy != null){
 				in.required( LP );
 
 				groupedCol = in.required(IDENTIFIER); //Max 안에 있는
@@ -831,19 +831,31 @@ public final class Database
 			in.required( FROM );
 			List requestedTableNames = idList();
 
+			Expression where = (in.matchAdvance(WHERE) == null)
+					? null : expr();
+
 
 			String groupingCol;
 
 			if(in.matchAdvance(GROUP) != null){
 				in.required(BY);
-
 				groupingCol = in.matchAdvance(IDENTIFIER);
-				System.out.println(groupingCol + ":" + groupedCol);
-				GroupBy groupBy = new GroupBy(new MaxStrategy(), groupingCol, groupedCol);
-				groupBy.groupCalculate();
+				// 그럼 이제 그룹한 것만 남기는 테이블 만들고 -> 이거 group by class에서 테이블 가져가서 하자.
+				List groupColumns = new ArrayList();
+				groupColumns.add(groupingCol);
+				groupColumns.add(groupedCol);
+				Table table = doSelect(groupColumns, into, requestedTableNames, where);
+				GroupBy groupBy = new GroupBy( groupingCol, groupedCol);
+				groupBy.setGroupStrategy(strategy);
+				groupBy.groupCalculate(table);
+
+
+				//그리고 그 테이블을 칼큘레이트에서 가져가서 사용하게 하고.
+				//새로 테이블 만들면 끝
+
+
 			}
-			Expression where = (in.matchAdvance(WHERE) == null)
-					? null : expr();
+
 
 
 

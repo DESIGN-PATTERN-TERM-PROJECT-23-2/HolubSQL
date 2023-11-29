@@ -36,11 +36,13 @@ public class GroupByTest {
 
 
         String string_expected = expectedTable.toString();
+        */
+
 
         String string_join_table = join_table.toString();
 
-         */
 
-        Assertions.assertEquals(a,b);
+
+        Assertions.assertEquals(a,string_join_table);
     }
 }
