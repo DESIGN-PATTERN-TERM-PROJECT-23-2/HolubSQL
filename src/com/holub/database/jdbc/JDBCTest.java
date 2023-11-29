@@ -26,6 +26,10 @@
  */
 package com.holub.database.jdbc;
 
+import com.holub.database.CSVExporter;
+
+import java.io.FileWriter;
+import java.io.Writer;
 import java.sql.*;
 
 /***
@@ -53,7 +57,7 @@ public class JDBCTest
 							"harpo", "swordfish" );
 
 			statement = connection.createStatement();
-		
+		/*
 			statement.executeUpdate(
 				"create table test (" +
 				 "  Entry      INTEGER      NOT NULL"   +
@@ -64,10 +68,22 @@ public class JDBCTest
 				 ", PRIMARY KEY( Entry )"               +
 				 ")"
 			);
+*/
+
+			statement.executeUpdate(
+					"create table hi (" +
+							"  Ey      INTEGER      NOT NULL"   +
+							", Customer   VARCHAR (20) NOT NULL"   +
+							", DOW        VARCHAR (3)  NOT NULL"   +
+							", Cups       INTEGER      NOT NULL"   +
+							", Type       VARCHAR (10) NOT NULL"   +
+							", PRIMARY KEY( Entry )"               +
+							")"
+			);
 
 			for( int i = 0; i < data.length; ++i )
 				statement.executeUpdate( 
-						"insert into test VALUES "+ data[i] );
+						"insert into hi VALUES "+ data[i] );
 
 			// Test Autocommit stuff. If everything's working
 			// correctly, there James should be in the databse,
@@ -75,27 +91,31 @@ public class JDBCTest
 
 			connection.setAutoCommit( false );
 			statement.executeUpdate( 
-						"insert into test VALUES "+
-						"(4, 'James',  'Thu', 1, 'Cappuccino')" );
+						"insert into hi VALUES "+
+						"(4, 'Ja',  'Thu', 1, 'Cappuccino')" );
 			connection.commit();
 
 			statement.executeUpdate(
-						"insert into test (Customer) VALUES('Fred')");
-			connection.rollback();
+						"insert into hi (Customer) VALUES('Fred')");
+			//connection.rollback();
 			connection.setAutoCommit( true );
 
 			// Print everything.
 
-			ResultSet result = statement.executeQuery( "select * from test" );
+			ResultSet result = statement.executeQuery( "select * from hi" );
 			while( result.next() )
 			{	System.out.println
-				(	  result.getInt("Entry")		+ ", "
+				(	  result.getInt("Ey")		+ ", "
 					+ result.getString("Customer")	+ ", "
 					+ result.getString("DOW")		+ ", "
 					+ result.getInt("Cups")			+ ", "
 					+ result.getString("Type")
+
 				);
 			}
+
+
+
 		}
 		finally
 		{

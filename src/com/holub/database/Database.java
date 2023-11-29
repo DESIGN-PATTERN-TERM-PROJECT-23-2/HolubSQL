@@ -370,7 +370,14 @@ public final class Database
 	private static final TokenSet tokens = new TokenSet();
 
 	private static final Token
-		COMMA		= tokens.create( "'," 		), //{=Database.firstToken}
+			GROUP = tokens.create("'GROUP"),
+			BY = tokens.create("'BY"),
+			MAX = tokens.create("'MAX"),
+			MIN = tokens.create("'MIN"),
+			AVG = tokens.create("'AVG"),
+			SUM = tokens.create("'SUM"),
+
+	    COMMA		= tokens.create( "'," 		), //{=Database.firstToken}
 		EQUAL		= tokens.create( "'=" 		),
 		LP			= tokens.create( "'(" 		),
 		RP 			= tokens.create( "')" 		),
@@ -795,22 +802,65 @@ public final class Database
 			in.required( WHERE );
 			affectedRows = doDelete( tableName, expr() );
 		}
-		else if( in.matchAdvance(SELECT) != null )
-		{	List columns = idList();
 
+
+
+
+		else if( in.matchAdvance(SELECT) != null )
+		{	//List columns = idList();
+
+			String a = in.matchAdvance(IDENTIFIER);
+			in.matchAdvance(COMMA);
+			List columns = Collections.singletonList(a);
+
+			//System.out.println(a);
 			String into = null;
+			String groupedCol = null;
+			String t = in.matchAdvance(MAX); //추후 여기를 switch 문으로 변경
+			if( t != null){
+				in.required( LP );
+
+				groupedCol = in.required(IDENTIFIER); //Max 안에 있는
+
+				in.required( RP );
+			}
+
 			if( in.matchAdvance(INTO) != null )
 				into = in.required(IDENTIFIER);
 
 			in.required( FROM );
 			List requestedTableNames = idList();
 
+
+			String groupingCol;
+
+			if(in.matchAdvance(GROUP) != null){
+				in.required(BY);
+
+				groupingCol = in.matchAdvance(IDENTIFIER);
+				System.out.println(groupingCol + ":" + groupedCol);
+				GroupBy groupBy = new GroupBy(new MaxStrategy(), groupingCol, groupedCol);
+				groupBy.groupCalculate();
+			}
 			Expression where = (in.matchAdvance(WHERE) == null)
-								? null : expr();
+					? null : expr();
+
+
+
 			Table result = doSelect(columns, into,
 								requestedTableNames, where );
 			return result;
 		}
+
+
+
+
+
+
+
+
+
+
 		else
 		{	error("Expected insert, create, drop, use, "
 										+"update, delete or select");
