@@ -816,7 +816,9 @@ public final class Database
 			//System.out.println(a);
 			String into = null;
 			String groupedCol = null;
-			String strategy = in.matchAdvance(MAX); //추후 여기를 switch 문으로 변경
+
+			//추후 여기를 switch 문으로 변경 + MAX, MIN 이런개 여러개 나와도 ㄱㄴ하도록 변경
+			String strategy = in.matchAdvance(MAX);
 			if( strategy != null){
 				in.required( LP );
 
@@ -840,7 +842,7 @@ public final class Database
 			if(in.matchAdvance(GROUP) != null){
 				in.required(BY);
 				groupingCol = in.matchAdvance(IDENTIFIER);
-				// 그럼 이제 그룹한 것만 남기는 테이블 만들고 -> 이거 group by class에서 테이블 가져가서 하자.
+
 				List groupColumns = new ArrayList();
 				groupColumns.add(groupingCol);
 				groupColumns.add(groupedCol);
