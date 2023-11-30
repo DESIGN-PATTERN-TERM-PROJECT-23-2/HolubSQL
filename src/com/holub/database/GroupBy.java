@@ -6,10 +6,9 @@ import java.util.List;
 import java.util.Map;
 
 public class GroupBy {
-    // 여기서 할 일
-    // group by 하면 해당 테이블 여기로 끌고 오기
 
     GroupStrategy groupStrategy;
+    String strategy;
     String groupingCol; //Group By (A)
     String groupedCol; //MAX (A)
 
@@ -20,6 +19,7 @@ public class GroupBy {
     }
 
     public void setGroupStrategy(String strategy) {
+        this.strategy = strategy;
         switch (strategy) {
             case "max":
                 this.groupStrategy = new MaxStrategy();
@@ -32,6 +32,8 @@ public class GroupBy {
                 break;
             case "avg":
                 this.groupStrategy = new AvgStrategy();
+            case "count":
+                this.groupStrategy = new CountStrategy();
                 break;
         }
         this.groupStrategy = groupStrategy;
@@ -59,11 +61,21 @@ public class GroupBy {
             result.computeIfAbsent(groupingKey, k -> new ArrayList<>()).add(groupedValue);
         }
         //System.out.println(result);
-
         return result;
     }
 
     //strategy에서 만든 키-값쌍을 테이블로 만들어서 반환하는 함수
+    /*
+    private Table groupByTable(Map<Object, ?> stResult){
+        //factory 패턴 사용해서 table 만들기.
+        //column이름 할때 strategy 사용해서 만들기.
+        //그리구 test 완성하면 끝날듯??
+
+        return table;
+
+    }
+
+     */
 }
 
 

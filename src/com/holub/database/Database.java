@@ -376,6 +376,7 @@ public final class Database
 			MIN = tokens.create("'MIN"),
 			AVG = tokens.create("'AVG"),
 			SUM = tokens.create("'SUM"),
+			COUNT = tokens.create("'COUNT"),
 
 	    COMMA		= tokens.create( "'," 		), //{=Database.firstToken}
 		EQUAL		= tokens.create( "'=" 		),
@@ -808,24 +809,40 @@ public final class Database
 
 		else if( in.matchAdvance(SELECT) != null )
 		{	//List columns = idList();
-
-			String a = in.matchAdvance(IDENTIFIER);
-			in.matchAdvance(COMMA);
-			List columns = Collections.singletonList(a);
-
-			//System.out.println(a);
+			List columns = null;
 			String into = null;
 			String groupedCol = null;
+			String strategy = null;
+			if( in.matchAdvance(STAR) == null )
+			{	columns = new ArrayList();
+				String id;
+				while( (id = in.required(IDENTIFIER)) != null )
+				{	columns.add(id);
+					if( in.matchAdvance(COMMA) != null ) {
+
+						strategy = in.matchAdvance(MAX);
+
+						if (strategy != null) {
+							in.required(LP);
+							groupedCol = in.required(IDENTIFIER); //Max 안에 있는
+							in.required(RP);
+							break;
+
+						}
+					}
+					else if( in.matchAdvance(COMMA) == null )
+						break;
+				}
+			}
+			//String a = in.matchAdvance(IDENTIFIER);
+			//in.matchAdvance(COMMA);
+			//List columns = Collections.singletonList(a);
+
+			//System.out.println(a);
+
 
 			//추후 여기를 switch 문으로 변경 + MAX, MIN 이런개 여러개 나와도 ㄱㄴ하도록 변경
-			String strategy = in.matchAdvance(MAX);
-			if( strategy != null){
-				in.required( LP );
-
-				groupedCol = in.required(IDENTIFIER); //Max 안에 있는
-
-				in.required( RP );
-			}
+			//System.out.println("hihihi");
 
 			if( in.matchAdvance(INTO) != null )
 				into = in.required(IDENTIFIER);

@@ -18,6 +18,7 @@ update address set zip = zip-1 where zip = (99999*1 + (10-10)/1)
 
 insert into name (last,first) VALUES( 'Please', 'Delete' )
 delete from name where last like '%eas%'
+delete from address where state = "XX"
 
 select * from address
 select * from name

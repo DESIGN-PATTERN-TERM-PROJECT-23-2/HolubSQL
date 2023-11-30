@@ -9,7 +9,7 @@ import java.io.*;
 
 class XMLExporterTest {
 
-    Table people = TableFactory.create("people", new String[] { "last", "first", "addrId" });Table address = TableFactory.create("address", new String[] { "addrId", "street", "city", "state", "zip" });
+    Table people = TableFactory.create("people", new String[] { "last", "first", "addrId" });
     Database database;
 
     private void insertData() throws IOException {
