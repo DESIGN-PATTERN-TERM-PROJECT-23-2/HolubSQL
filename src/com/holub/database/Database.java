@@ -825,8 +825,25 @@ public final class Database
 				while( (id = in.required(IDENTIFIER)) != null )
 				{	columns.add(id);
 					if( in.matchAdvance(COMMA) != null ) {
+						if( in.matchAdvance(MAX) != null ){
+							strategy = "max";
+						}
+						else if( in.matchAdvance(MIN) != null ){
+							strategy = "min";
+						}
 
-						strategy = in.matchAdvance(MAX);
+						else if( in.matchAdvance(SUM) != null ){
+							strategy = "sum";
+						}
+
+						else if( in.matchAdvance(AVG) != null ){
+							strategy = "avg";
+							System.out.println(strategy);
+						}
+						else if( in.matchAdvance(COUNT) != null ){
+							strategy = "count";
+						}
+
 
 						if (strategy != null) {
 							in.required(LP);
@@ -840,15 +857,9 @@ public final class Database
 						break;
 				}
 			}
-			//String a = in.matchAdvance(IDENTIFIER);
-			//in.matchAdvance(COMMA);
-			//List columns = Collections.singletonList(a);
-
-			//System.out.println(a);
-
 
 			//추후 여기를 switch 문으로 변경 + MAX, MIN 이런개 여러개 나와도 ㄱㄴ하도록 변경
-			//System.out.println("hihihi");
+
 
 			if( in.matchAdvance(INTO) != null )
 				into = in.required(IDENTIFIER);

@@ -32,6 +32,7 @@ public class GroupBy {
                 break;
             case "avg":
                 this.groupStrategy = new AvgStrategy();
+                break;
             case "count":
                 this.groupStrategy = new CountStrategy();
                 break;
