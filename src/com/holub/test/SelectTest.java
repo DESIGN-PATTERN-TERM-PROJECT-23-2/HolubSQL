@@ -40,6 +40,12 @@ public class SelectTest {
         expectedTable.insert(new Object[]{"0", "12 MyStreet", "Berkeley", "CA", "99998", "Allen", "Holub", 0});
         expectedTable.insert(new Object[]{"1", "34 Quarry Ln.", "Bedrock", "AZ", "00000", "Fred", "Flintstone", 1});
         expectedTable.insert(new Object[]{"1", "34 Quarry Ln.", "Bedrock", "AZ", "00000", "Wilma", "Flintstone", 1});
+        //join_table = database.execute("delete from join_table where addrId = 0");
+
+        Writer out = new FileWriter("join_table");
+        join_table.export(new CSVExporter(out));
+        out.close();
+
 
         String string_expected = expectedTable.toString();
 

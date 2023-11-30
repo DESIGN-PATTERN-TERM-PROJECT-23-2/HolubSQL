@@ -370,7 +370,15 @@ public final class Database
 	private static final TokenSet tokens = new TokenSet();
 
 	private static final Token
-		COMMA		= tokens.create( "'," 		), //{=Database.firstToken}
+			GROUP = tokens.create("'GROUP"),
+			BY = tokens.create("'BY"),
+			MAX = tokens.create("'MAX"),
+			MIN = tokens.create("'MIN"),
+			AVG = tokens.create("'AVG"),
+			SUM = tokens.create("'SUM"),
+			COUNT = tokens.create("'COUNT"),
+
+	    COMMA		= tokens.create( "'," 		), //{=Database.firstToken}
 		EQUAL		= tokens.create( "'=" 		),
 		LP			= tokens.create( "'(" 		),
 		RP 			= tokens.create( "')" 		),
@@ -559,6 +567,11 @@ public final class Database
 		File tableFile = new File(location,name);
 		if( tableFile.exists() )
 			tableFile.delete();
+	}
+
+	public void tableList() {
+		System.out.println(tables.isEmpty());
+
 	}
 
 	/** Flush to the persistent store (e.g. disk) all tables that
@@ -795,10 +808,59 @@ public final class Database
 			in.required( WHERE );
 			affectedRows = doDelete( tableName, expr() );
 		}
-		else if( in.matchAdvance(SELECT) != null )
-		{	List columns = idList();
 
+
+
+
+		else if( in.matchAdvance(SELECT) != null )
+		{	//List columns = idList();
+			List columns = null;
 			String into = null;
+			String groupedCol = null;
+			String strategy = null;
+			Table result;
+			if( in.matchAdvance(STAR) == null )
+			{	columns = new ArrayList();
+				String id;
+				while( (id = in.required(IDENTIFIER)) != null )
+				{	columns.add(id);
+					if( in.matchAdvance(COMMA) != null ) {
+						if( in.matchAdvance(MAX) != null ){
+							strategy = "max";
+						}
+						else if( in.matchAdvance(MIN) != null ){
+							strategy = "min";
+						}
+
+						else if( in.matchAdvance(SUM) != null ){
+							strategy = "sum";
+						}
+
+						else if( in.matchAdvance(AVG) != null ){
+							strategy = "avg";
+							System.out.println(strategy);
+						}
+						else if( in.matchAdvance(COUNT) != null ){
+							strategy = "count";
+						}
+
+
+						if (strategy != null) {
+							in.required(LP);
+							groupedCol = in.required(IDENTIFIER); //Max 안에 있는
+							in.required(RP);
+							break;
+
+						}
+					}
+					else if( in.matchAdvance(COMMA) == null )
+						break;
+				}
+			}
+
+			//추후 여기를 switch 문으로 변경 + MAX, MIN 이런개 여러개 나와도 ㄱㄴ하도록 변경
+
+
 			if( in.matchAdvance(INTO) != null )
 				into = in.required(IDENTIFIER);
 
@@ -806,11 +868,47 @@ public final class Database
 			List requestedTableNames = idList();
 
 			Expression where = (in.matchAdvance(WHERE) == null)
-								? null : expr();
-			Table result = doSelect(columns, into,
-								requestedTableNames, where );
+					? null : expr();
+
+
+			String groupingCol;
+
+			if(in.matchAdvance(GROUP) != null){
+				in.required(BY);
+				groupingCol = in.matchAdvance(IDENTIFIER);
+
+				List groupColumns = new ArrayList();
+				groupColumns.add(groupingCol);
+				groupColumns.add(groupedCol);
+				Table table = doSelect(groupColumns, into, requestedTableNames, where);
+				GroupBy groupBy = new GroupBy( groupingCol, groupedCol);
+				groupBy.setGroupStrategy(strategy);
+				result = groupBy.groupCalculate(table);
+
+
+
+				//그리고 그 테이블을 칼큘레이트에서 가져가서 사용하게 하고.
+				//새로 테이블 만들면 끝
+
+
+			}
+			else {
+
+				result = doSelect(columns, into,
+						requestedTableNames, where);
+			}
 			return result;
 		}
+
+
+
+
+
+
+
+
+
+
 		else
 		{	error("Expected insert, create, drop, use, "
 										+"update, delete or select");

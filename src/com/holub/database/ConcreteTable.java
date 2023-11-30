@@ -119,8 +119,6 @@ import javax.xml.stream.XMLStreamException;
 			Object[] current = new Object[width];
 			for (int i = 0; columns.hasNext();) {
 				Object columnValue = columns.next();
-				System.out.print(columnValue + " ");
-				System.out.print("ColumnValue!!!!");
 				current[i++] = columnValue;
 			}
 			this.insert(current);

@@ -1,0 +1,5 @@
+<anonymous>
+addrId,	street,	city,	state,	zip,	first,	last,	addrId
+0,	12 MyStreet,	Berkeley,	CA,	99998,	Allen,	Holub,	0
+1,	34 Quarry Ln.,	Bedrock,	AZ,	00000,	Fred,	Flintstone,	1
+1,	34 Quarry Ln.,	Bedrock,	AZ,	00000,	Wilma,	Flintstone,	1
