@@ -569,6 +569,11 @@ public final class Database
 			tableFile.delete();
 	}
 
+	public void tableList() {
+		System.out.println(tables.isEmpty());
+
+	}
+
 	/** Flush to the persistent store (e.g. disk) all tables that
 	 *  are "dirty" (which have been modified since the database
 	 *  was last committed). These tables will not be flushed
@@ -813,6 +818,7 @@ public final class Database
 			String into = null;
 			String groupedCol = null;
 			String strategy = null;
+			Table result;
 			if( in.matchAdvance(STAR) == null )
 			{	columns = new ArrayList();
 				String id;
@@ -866,7 +872,8 @@ public final class Database
 				Table table = doSelect(groupColumns, into, requestedTableNames, where);
 				GroupBy groupBy = new GroupBy( groupingCol, groupedCol);
 				groupBy.setGroupStrategy(strategy);
-				groupBy.groupCalculate(table);
+				result = groupBy.groupCalculate(table);
+
 
 
 				//그리고 그 테이블을 칼큘레이트에서 가져가서 사용하게 하고.
@@ -874,12 +881,11 @@ public final class Database
 
 
 			}
+			else {
 
-
-
-
-			Table result = doSelect(columns, into,
-								requestedTableNames, where );
+				result = doSelect(columns, into,
+						requestedTableNames, where);
+			}
 			return result;
 		}
 

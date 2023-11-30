@@ -28,21 +28,21 @@ public class GroupByTest {
         int a = 0;
         int b = 1;
         Table join_table = database.execute("select building, max(capacity) from university group by building ");
-        /*
-        Table expectedTable = TableFactory.create("<anonymous>", new String[]{"addrId", "street", "city", "state", "zip", "first", "last", "addrId"});
-        expectedTable.insert(new Object[]{"0", "12 MyStreet", "Berkeley", "CA", "99998", "Allen", "Holub", 0});
-        expectedTable.insert(new Object[]{"1", "34 Quarry Ln.", "Bedrock", "AZ", "00000", "Fred", "Flintstone", 1});
-        expectedTable.insert(new Object[]{"1", "34 Quarry Ln.", "Bedrock", "AZ", "00000", "Wilma", "Flintstone", 1});
+
+        Table expectedTable = TableFactory.create("<anonymous>", new String[]{"building", "max(capacity)"});
+        expectedTable.insert(new Object[]{"A", 500.0});
+        expectedTable.insert(new Object[]{"B", 100.0});
+
 
 
         String string_expected = expectedTable.toString();
-        */
-
-
-        String string_join_table = join_table.toString();
 
 
 
-        Assertions.assertEquals(a,string_join_table);
+        String string_group_table = join_table.toString();
+
+
+
+        Assertions.assertEquals(string_expected,string_group_table);
     }
 }

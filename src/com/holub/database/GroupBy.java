@@ -45,7 +45,8 @@ public class GroupBy {
         Map<Object, List<Double>> result  = groupList(table);
         Map<Object, ?> stResult = groupStrategy.calculate(result);
         System.out.println(stResult);
-        return table;
+        Table groupTable = groupByTable(stResult);
+        return groupTable;
     }
 
     private Map<Object, List<Double>> groupList(Table table) {
@@ -60,22 +61,34 @@ public class GroupBy {
             // 결과 맵에 키가 이미 존재하는지 확인하고 없으면 새로운 리스트를 생성하여 추가
             result.computeIfAbsent(groupingKey, k -> new ArrayList<>()).add(groupedValue);
         }
+
+
         //System.out.println(result);
         return result;
     }
 
     //strategy에서 만든 키-값쌍을 테이블로 만들어서 반환하는 함수
-    /*
-    private Table groupByTable(Map<Object, ?> stResult){
-        //factory 패턴 사용해서 table 만들기.
-        //column이름 할때 strategy 사용해서 만들기.
-        //그리구 test 완성하면 끝날듯??
 
-        return table;
+    private Table groupByTable(Map<Object, ?> stResult) {
+        // factory 패턴 사용해서 table 만들기.
+        // column 이름 할 때 strategy 사용해서 만들기.
+        String strategyCol = strategy + "(" + groupedCol + ")";
+        Table groupTable = TableFactory.create(null, new String[]{groupingCol, strategyCol});
 
+
+        for (Map.Entry<Object, ?> entry : stResult.entrySet()) {
+            Object key = entry.getKey();
+            Object value = entry.getValue();
+
+            groupTable.insert(new Object[]{key, value});
+        }
+
+        //System.out.println(groupTable.toString());
+
+        return groupTable;
     }
 
-     */
+
 }
 
 
